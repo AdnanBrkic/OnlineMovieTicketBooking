@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script language="JavaScript" type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+
+        <!-- Bootstrap CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet" />
+
+        <!-- SPApp -->
+        <link href="css/jQuerySPApp.css" rel="stylesheet" />
+
+        <!-- FontAwesome -->
+        <script src="https://kit.fontawesome.com/f76ff82487.js" crossorigin="anonymous"></script>
+
+        <!-- Google FONT -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+        <!-- Feather Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Custom Style -->
+
+        <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+
+        <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+
+        <link rel="stylesheet" href="css/style.css" />
+
+        <title>Hello, world!</title>
+    </head>
+    <body>
+
+        <div class="container-fluid loginandregister">
+            <div id="login-form-container" class="row">
+                <div class="col-10 col-md-6 col-md-offset-4">
+                    <div class="login-panel panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Register for free</h3>
+                            <p class="description-title">A theatre you will fall in love with!</p>
+                        </div>
+                        <div class="panel-body">
+                            <form id="register-form" role="form">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <input id="email" class="form-control" placeholder="E-mail" name="email" type="email" autofocus required />
+                                    </div>
+                                    <div class="form-group">
+                                        <input id="username" class="form-control" placeholder="Username" name="username" type="text" autofocus required />
+                                    </div>
+                                    <div class="form-group">
+                                        <input id="password" class="form-control" placeholder="Password" name="password" type="password" value="" required />
+                                    </div>
+                                    <div class="form-group">
+                                      <button id="register-link" class="btn btn-lg btn-success btn-block" type="submit">Register</button>
+                                    </div>
+                                    
+                                </fieldset>
+                            </form>
+                            <p class="login-cta">Already have an account? <a href="login.html">Log in</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- jQuery -->
+        <script src="js/jquery-3.6.0.min.js"></script>
+        <!-- Bootstrap Core JavaScript -->
+        <script src="js/bootstrap.bundle.js"></script>
+
+        
+        <script src="./assets/js/utils.js"></script>
+        <!--<script src="./assets/js//controllers/login.js"></script>-->
+
+
+        <script type="text/javascript">
+                $("#register-form").on("submit", function(e){
+                    e.preventDefault();
+                   doRegister();
+                });
+           function doRegister(){
+                var register_info = {
+                    'username' : $('#username').val(),
+                    'email' : $('#email').val(),
+                    'password' : $('#password').val(),
+                }
+                $("#register-link").prop('disabled', true);
+
+                $.post("rest/user/register", register_info).done(function(data){
+                    console.log(data);
+                    alert("It Works");
+                    //window.localStorage.setItem("token", data.token);
+                    window.location = "login.html";
+                }).fail(function(error){
+                    $("#register-link").prop('disabled', false);
+                });
+                
+            
+            }
+                
+        </script>
+          
+    </body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script language="JavaScript" type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+
+        <!-- Bootstrap CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet" />
+
+        <!-- SPApp -->
+        <link href="css/jQuerySPApp.css" rel="stylesheet" />
+
+        <link href="css/all.css" rel="stylesheet" />
+
+
+        <!-- Google FONT -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+        <!-- Feather Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Custom Style -->
+
+        <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+
+        <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+
+        <link rel="stylesheet" href="css/style.css" />
+        
+        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+
+        <title>CineStar Cinemas – kina s pet zvjezdica</title>
+    </head>
+
+    <body>
+        
+        <div id="left-bar-menu" class="left-bar">
+            <div class="logo">
+                <img src="images/cinestar_logo.svg" />
+            </div>
+
+            <div class="user"></div>
+
+            <div class="sidebar-menu">
+                <div class="tab first-tab">
+                    <p class="tab-title">Home</p>
+                    <a href="#movies" class="tab-link active">
+                        <i class="fa-regular fa-house"></i>
+                        <p>Discovery</p>
+                    </a>
+                </div>
+                
+                <!--
+                <div class="tab">
+                    <p class="tab-title">Services</p>
+                    <a href="#" class="tab-link">
+                        <i class="fa-regular fa-calendar"></i>
+                        <p>Events</p>
+                    </a>
+                    <a href="#" class="tab-link">
+                        <i class="fa-regular fa-star"></i>
+                        <p>Loyalty Program</p>
+                    </a>
+                </div>
+                -->
+            </div>
+        </div>
+
+        <button class="menu hamburger-menu" onclick="this.classList.toggle('opened');this.setAttribute('aria-expanded', this.classList.contains('opened'))" aria-label="Main Menu">
+            <svg width="60" height="60" viewBox="0 0 100 100">
+                <path
+                    class="line line1"
+                    d="M 20,29.000046 H 80.000231 C 80.000231,29.000046 94.498839,28.817352 94.532987,66.711331 94.543142,77.980673 90.966081,81.670246 85.259173,81.668997 79.552261,81.667751 75.000211,74.999942 75.000211,74.999942 L 25.000021,25.000058"
+                />
+                <path class="line line2" d="M 20,50 H 80" />
+                <path
+                    class="line line3"
+                    d="M 20,70.999954 H 80.000231 C 80.000231,70.999954 94.498839,71.182648 94.532987,33.288669 94.543142,22.019327 90.966081,18.329754 85.259173,18.331003 79.552261,18.332249 75.000211,25.000058 75.000211,25.000058 L 25.000021,74.999942"
+                />
+            </svg>
+        </button>
+
+        <div class="right-bar">
+            <main id="jqueryspapp" role="main">
+                <section id="movies" data-load="movies.html"></section>
+                <section id="single-movie" data-load="single-movie.html"></section>
+                <section id="reservation-seats" data-load="reservation-seats.html"></section>
+                <section id="reservation" data-load="reservation.html"></section>
+                <section id="tickets" data-load="tickets.html"></section>
+                <section id="settings" data-load="settings.html"></section>
+            </main>
+
+            <footer>
+                <div class="logo">
+                    <img src="images/cinestar_logo.svg" />
+                </div>
+                <div class="mini-menu">
+                    <ul class="row">
+                        <li class="col"><a href="#">About</a></li>
+                        <li class="col"><a href="#">Services</a></li>
+                        <li class="col"><a href="#">Club</a></li>
+                        <li class="col"><a href="#">FAQ</a></li>
+                        <li class="col"><a href="#">Legal</a></li>
+                        <li class="col"><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="contact-info">
+                    <h1>Stay in touch</h1>
+                    <ul>
+                        <li>
+                            <a href="#"><i class="fa-brands fa-instagram circle-icon"></i></a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa-brands fa-twitter circle-icon"></i></a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa-brands fa-facebook-f circle-icon"></i></a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa-brands fa-pinterest circle-icon"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <p>© Cinestar 2022 All Rights Reserved</p>
+            </footer>
+        </div>
+
+        <script src="js/jQuerySPApp.js"></script>
+        
+
+        <script type="text/javascript">
+                  
+            $(document).ready(function () {
+                var app = $.jQuerySPApp({ defaultView: "movies" }); // initialize
+
+                app.route({
+                    view: "single-movie",
+
+                    onCreate: function () {},
+                    onReady: function () {
+                        getSingleMovie(localStorage.getItem("movie_id"));
+                        getMovieProjecting(localStorage.getItem("movie_id"));
+                        getMovieImage(localStorage.getItem("movie_id"));
+                        getMovieRating(localStorage.getItem("movie_id"));
+                        getMovieDuration(localStorage.getItem("movie_id"));
+                        getMovieCategory(localStorage.getItem("movie_id"));
+                        getMovieCasts(localStorage.getItem("movie_id"));
+                        getMovieBackgroundImage(localStorage.getItem("movie_id"));
+                    },
+                });
+
+                app.route({
+                    view: "movies",
+
+                    onCreate: function () {},
+                    onReady: function () {
+                        MovieService.listCategory();
+                    },
+                });
+
+                app.route({
+                    view: "reservation-seats",
+
+                    onCreate: function () {},
+                    onReady: function () {
+                        generateSeatsTable();
+                        checkSeatsAvailable(localStorage.getItem("projecting_movie"));
+                        generatePriceFields();
+                        getMovieName(localStorage.getItem("movie_id"));
+                        checkSeatsAvailable(localStorage.getItem("projecting_movie"));
+                    },
+                });
+
+
+                app.route({
+                    view: "reservation",
+
+                    onCreate: function () {},
+                    onReady: function () {
+                        checkoutTickets();
+                    },
+                });
+
+                app.route({
+                    view: "tickets",
+
+                    onCreate: function () {},
+                    onReady: function () {
+
+                    },
+                });
+                
+                app.route({
+                    view: "settings",
+
+                    onCreate: function () {},
+                    onReady: function () {
+                        removeChangeWindows();
+                    },
+                });
+
+                app.run();
+            });
+        </script>
+
+        <script>
+            $(document).on("click", ".sidebar-menu .tab-link", function (e) {
+                e.preventDefault();
+                var $el = $(this);
+                $(".tab-link").removeClass("active");
+                $el.addClass("active");
+                window.location.href = $el.attr("href");
+            });
+
+            $(".hamburger-menu").click(function () {
+                $(".left-bar").toggleClass("show-nav");
+                $(".right-bar").toggleClass("active-nav");
+                $("body").toggleClass("unable-to-scroll");
+                $(".right-bar").toggleClass("unable-to-scroll");
+            });
+
+            function logout() {
+                window.localStorage.clear();
+                location.reload();
+            }
+
+            checkIfUserLogin();
+
+            function getID() {
+                var result = "";
+                $.ajax({
+                    type: "GET",
+                    url: "rest/locked/id",
+                    async: false,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
+                    },
+                    success: function (data) {
+                        result = data;
+                    },
+                });
+                return parseInt(result);
+            }
+            
+            function preloaderCheck(){
+                $('.preloader').hide();
+            }
+
+            function checkIfUserLogin() {
+                var token = getID();
+                $.ajax({
+                    url: "rest/locked/user/users/" + token,
+                    type: "GET",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
+                    },
+                    success: function (data) {
+                        var html = "";
+                        html += `<div class="tab user-tab">
+                                    <p class="tab-title">General</p>
+                                    <a href="#settings" class="tab-link">
+                                        <i class="fa-regular fa-gear"></i>
+                                        <p>Settings</p>
+                                    </a>
+                                    <a id="logout-button" href="" onclick="logout();" class="red-link tab-link">
+                                        <i class="fa-regular fa-arrow-right-from-bracket"></i>
+                                        <p>Log Out</p>
+                                    </a>
+                                </div>`;
+                        $(".sidebar-menu").append(html);
+
+                        var html2 = "";
+                        html2 +=
+                            `
+                      <div class="user-image">
+                            <img src="images/client_image.jpg" />
+                        </div>
+                        <div class="user-name">
+                            <p>
+                               ` +
+                            data.username +
+                            ` 
+                            </p>
+                        </div>`;
+                        $(".user").append(html2);
+
+                        var html3 = "";
+                        html3 += `<a id="tickets-tab" href="#tickets" class="tab-link">
+                                <i class="fa-regular fa-ticket-simple"></i>
+                                <p>Tickets</p>
+                            </a>`;
+                        $(".first-tab").append(html3);
+                    },
+                    error: function () {
+                        window.localStorage.removeItem("token");
+                        var html3 = "";
+                        html3 += `<div class="tab user-tab">
+                                <a href="login.html" class="tab-link login-button-nav">
+                                    <i class="fa-regular fa-arrow-right-to-bracket"></i>
+                                    <p>Login</p>
+                                </a>
+                            </div>`;
+                        $(".sidebar-menu").append(html3);
+                    },
+                });
+            }
+        </script>
+
+
+        <!-- Option 1: Bootstrap Bundle with Popper -->
+        <script src="js/bootstrap.bundle.js"></script>
+
+        <script src="js/JsBarcode.all.min.js"></script>
+    </body>
+</html>

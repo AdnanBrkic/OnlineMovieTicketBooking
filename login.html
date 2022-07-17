@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script language="JavaScript" type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+
+        <!-- Bootstrap CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet" />
+
+        <!-- SPApp -->
+        <link href="css/jQuerySPApp.css" rel="stylesheet" />
+
+        <!-- FontAwesome -->
+        <script src="https://kit.fontawesome.com/f76ff82487.js" crossorigin="anonymous"></script>
+
+        <!-- Google FONT -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+        <!-- Feather Icons -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- Custom Style -->
+
+        <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+
+        <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+
+        <link rel="stylesheet" href="css/style.css" />
+        
+        <link href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" type="text/css">
+
+        <title>Hello, world!</title>
+    </head>
+    <body>
+
+        <div class="container-fluid loginandregister">
+            <div id="login-form-container" class="row">
+                <div class="col-10 col-md-6 col-md-offset-4">
+                    <div class="login-panel panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Log In</h3>
+                            <p class="description-title">A theatre you will fall in love with!</p>
+                        </div>
+                        <div class="panel-body">
+                            <form id="login-form" role="form">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <input id="email" class="form-control" placeholder="E-mail" name="email" type="email" autofocus>
+                                    </div>
+                                    <div class="form-group">
+                                        <input id="password" class="form-control" placeholder="Password" name="password" type="password" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <button id="login-link" onclick="doLogin();" class="btn btn-lg btn-primary btn-block" type="button">Login</button>
+                                    </div>
+                                   
+                                    
+                                </fieldset>
+                            </form>
+                            <p class="login-cta">Not a member yet? <a href="register.html">Create an account for free</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="js/UserService.js"></script>
+        
+        <script src="js/jquery-3.6.0.min.js"></script>
+        
+        <script src="js/bootstrap.bundle.js"></script>
+
+        <!-- Toastr JS -->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+        <script type="text/javascript">
+            
+            
+            
+            function doLogin(){
+                var login_info = {
+                     'email' : $('#email').val(),
+                     'password' : $('#password').val()
+                }
+                
+                $("login-link").prop('disabled', true);
+                $.post("rest/user/login", login_info).done(function(data){
+                    console.log(data.token);
+                    window.localStorage.setItem("token", data.token);
+                    window.location = "index.html";
+                }).fail(function(error){
+                    $("login-link").prop('disabled', false);
+                    toastr.error('Login failed please check your credentials!');
+                });
+            
+            }
+            
+        </script>
+          
+    </body>
+</html>

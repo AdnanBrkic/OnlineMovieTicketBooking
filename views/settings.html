@@ -1,0 +1,181 @@
+<div class="content" style="display: none">
+   <div class="top-bar-1">
+        <p>SETTINGS</p>
+        <h1 class="movie-name">Account Info</h1>
+    </div>
+    <div class="container-fluid">
+        <div class="row user-settings-info">
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-12 username-column my-4">
+                <form>
+                    <div class="form-group">
+                            <label for="Username">Username</label>
+                            <input type="text" id="username" class="form-control" placeholder="Brown" />
+                        </div>
+                    <button onclick="changeSettings();" class="settings-btn" type="submit" class="btn btn-primary">Save Change</button>
+                </form>
+            </div>
+            
+            <div class="col-12 email-column my-4">
+                <form>
+                    <div class="form-group">
+                        <label for="inputEmail4">Email</label>
+                        <input type="email" class="form-control" id="email2" placeholder="brown@asher.me" />
+                    </div>
+                    <button onclick="changeSettings();" class="settings-btn" type="submit" class="btn btn-primary">Save Change</button>
+                </form>
+            </div>
+            
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.5.0/js/md5.min.js"></script>
+
+<script type="text/javascript">
+    
+    showUserInfo();
+    removeChangeWindows();
+    
+    function removeChangeWindows(){
+        $(".username-column").removeClass("user-column-active");
+        $(".email-column").removeClass("user-column-active");
+    }
+    
+    function showUserInfo(){
+        $.ajax({
+            type: "GET",
+            url: "rest/locked/user/users/" + getID(),
+            async: false,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
+            },
+            success: function(data) {
+                var html = '';
+                html += ` <div class="col-12 d-flex">
+                                <p class="flex-grow-1">Username: <span>`+data.username+`</span></p>
+                                <p class="change-settings change-username" onclick="showChangeUsername();">Change</p>
+                            </div>
+                            <div class="col-12 d-flex">
+                                <p class="flex-grow-1">Email: <span>`+data.email+`</span></p>
+                                <p class="change-settings change-email" onclick="showChangeEmail();">Change</p>
+                            </div>`
+                
+            $('.user-settings-info').html(html);
+            encrpt();
+            }
+        });
+    }
+            
+    function getID() {
+        var result = "";
+        $.ajax({
+            type: "GET",
+            url: "rest/locked/id",
+            async: false,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
+            },
+            success: function(data) {
+                result = data;
+            },
+        });
+        return parseInt(result);
+    }  
+    
+            
+    
+    function changeEmail(){
+        
+        var userId = getID();
+        var info = {
+             'email' : $('#email2').val(),
+        }
+        console.log(info);
+        if(document.getElementById("email2").value.length == 0)
+        {
+            return;
+        }
+        else {  
+            $(".settings-btn").prop('disabled', true);
+            
+            
+            $.ajax({
+                url: 'rest/settings/' + userId,
+                type: 'PUT',
+                data: JSON.stringify(info),
+                contentType: "application/json",
+                dataType: "json",
+                success: function(data) {
+                    alert('Load was performed.');
+                }
+            });
+        }  
+    }
+    
+    function changeUsername(){
+        
+        var userId = getID();
+        var info = {
+             'username' : $('#username').val(),
+        }
+        console.log(info);
+        if(document.getElementById("username").value.length == 0)
+        {
+            return;
+        }
+        else {  
+            $(".settings-btn").prop('disabled', true);
+            $.ajax({
+                url: 'rest/settings/' + userId,
+                type: 'PUT',
+                data: JSON.stringify(info),
+                contentType: "application/json",
+                dataType: "json",
+                success: function(data) {
+                    alert('Load was performed.');
+                }
+            });
+        } 
+    }
+    
+    function changeSettings(){
+        changeUsername();
+        changeEmail();
+        window.location.reload();
+    }
+    
+    function showChangeUsername(){
+        if($(".email-column").hasClass("user-column-active")){
+            $(".email-column").removeClass("user-column-active");
+            $(".username-column").addClass("user-column-active");
+        }
+        else {
+            $(".username-column").addClass("user-column-active");
+        }
+    }
+    
+    function showChangeEmail(){
+        if($(".username-column").hasClass("user-column-active")){
+            $(".username-column").removeClass("user-column-active");
+            $(".email-column").addClass("user-column-active");
+        }
+        else {
+            $(".email-column").addClass("user-column-active");
+        }
+    }
+    
+
+    
+    $(function() {
+        if(!window.localStorage.getItem("token")) {
+            window.location = "login.html";
+        } else {
+            $('.content').show();
+            
+        }
+    });
+    
+    
+</script>

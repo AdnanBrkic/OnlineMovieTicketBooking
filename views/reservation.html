@@ -1,0 +1,231 @@
+<div class="content" style="display: none;">
+    <div class="top-bar-1">
+            <p>CHECK OUT</p>
+            <h1 class="movie-name">Finish you reservation</h1>
+        </div>
+	<div class="reservation-bill">
+		<div class="row">
+			<div class="col-md-12">
+				<h4 class="d-flex justify-content-between align-items-center mb-3">
+					<span class="your-tickets">Your tickets</span>
+				</h4>
+				<ul class="list-group mb-3 checkout-bill">
+					<li class="list-group-item d-flex justify-content-between lh-condensed">
+						<div>
+							<h6 class="my-0">Movie name:</h6>
+							<p class="text-muted movie-ticket-name ticket-movie-name"></p>
+						</div>
+					</li>
+					<hr>
+					<ul class="ticket-list">
+					</ul>
+					<li class="list-group-item d-flex justify-content-between">
+						<span class="total-price">Total (USD)</span>
+						<span class="total-price-2">0</span>
+					</li>
+				</ul>
+				<div class="list-group-item d-flex justify-content-between">
+					<button id="pay-link" class="btn btn-lg btn-success btn-block" type="submit">Reserve</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    
+$("#pay-link").click(function() {
+	reserveTicketFinal();
+})
+
+function updateSeatsStatus() {
+	var helpSeats2 = JSON.parse(localStorage.getItem('seats_update'));
+	var currentProjectingMovie = localStorage.getItem("projecting_movie")
+	for(var key in helpSeats2) {
+		if(helpSeats2[key] == 1) {
+			var seat_info = {
+				'cinema_seats_id': parseInt(key),
+				'projecting_movies_id': parseInt(currentProjectingMovie),
+			};
+			console.log(helpSeats2);
+			$.post("rest/selected_seats/", seat_info).done(function(data) {})
+		}
+	}
+}
+
+function endReservation() {
+	updateSeatsStatus()
+	localStorage.removeItem("vip-seats-num");
+	localStorage.removeItem("regular-seats-num");
+	localStorage.removeItem("love-seats-num");
+	localStorage.removeItem("final_price_num");
+	localStorage.removeItem("final_price_num");
+	window.localStorage.removeItem('seats_update');
+	window.location = "index.html";
+}
+
+function reserveFinish(info) {
+	$.post("rest/reservation/", +info);
+}
+
+function generateBarCode() {
+	var i = 0;
+	do {
+		var barcode = Math.floor(Math.random() * 9999999999);
+		$.ajax({
+			url: 'rest/reservation/barcode/' + barcode,
+			type: 'GET',
+			success: function(data) {
+				if(data.status == undefined) {
+					i = i + 1;
+				}
+			}
+		});
+	} while(i != 0);
+	return barcode;
+}
+
+function getID() {
+	var result = "";
+	$.ajax({
+		type: "GET",
+		url: 'rest/locked/id',
+		async: false,
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader('Authorization', localStorage.getItem('token'));
+		},
+		success: function(data) {
+			result = data;
+		}
+	});
+	return parseInt(result);
+}
+
+function reserveTicketFinal() {
+	var user_id = getID();
+	$.ajax({
+		url: 'rest/locked/user/users/' + user_id,
+		type: 'GET',
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader('Authorization', localStorage.getItem('token'));
+		},
+		success: function(data) {
+			var helpVar = 0;
+			var helpSeats = JSON.parse(localStorage.getItem('seats_update'));
+			console.log(data.id);
+			for(var key in helpSeats) {
+				if(helpSeats[key] == 1 && helpVar < 11) {
+					var reservation_info = {
+						'user_id': data.id,
+						'type': "Regular",
+						'seat_number': parseInt(key),
+						'projecting_movie': parseInt(localStorage.getItem("projecting_movie")),
+						'reservation_code': generateBarCode(),
+						'status': "PENDING",
+					};
+					$.post("rest/reservation/", reservation_info).done(function(data) {})
+				} else if(helpSeats[key] == 1 && helpVar < 17) {
+					var reservation_info = {
+						'user_id': data.id,
+						'type': "VIP",
+						'seat_number': parseInt(key),
+						'projecting_movie': parseInt(localStorage.getItem("projecting_movie")),
+						'reservation_code': generateBarCode(),
+						'status': "PENDING",
+					};
+					$.post("rest/reservation/", reservation_info).done(function(data) {})
+				} else if(helpSeats[key] == 1 && helpVar < 20) {
+					var reservation_info = {
+						'user_id': data.id,
+						'type': "Love",
+						'seat_number': parseInt(key),
+						'projecting_movie': parseInt(localStorage.getItem("projecting_movie")),
+						'reservation_code': generateBarCode(),
+						'status': "PENDING",
+					};
+					$.post("rest/reservation/", reservation_info).done(function(data) {})
+				}
+				helpVar = helpVar + 1;
+			}
+			endReservation();
+		}
+	});
+}
+
+function checkoutTickets() {
+	$('.ticket-list').html("");
+	checkRegularSeats();
+	checkVipSeats();
+	checkLoveSeats();
+
+	function checkRegularSeats() {
+		if(localStorage.getItem("regular-seats-num") > 0) {
+			var html = '';
+			html += `
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0"><span class="ticket-times">` + localStorage.getItem("regular-seats-num") + `x </span>Regular ticket</h6>
+              </div>
+              <span class="ticket-price">$` + (localStorage.getItem("regular-seats-num")) * 10 + `</span>
+            </li><hr>`
+			$('.ticket-list').append(html);
+		}
+	}
+
+	function checkVipSeats() {
+		if(localStorage.getItem("vip-seats-num") > 0) {
+			var html = '';
+			html += `
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0"><span class="ticket-times">` + localStorage.getItem("vip-seats-num") + `x </span>Vip ticket</h6>
+              </div>
+              <span class="ticket-price">$` + (localStorage.getItem("vip-seats-num")) * 15 + `</span>
+            </li><hr>`
+			$('.ticket-list').append(html);
+		}
+	}
+
+	function checkLoveSeats() {
+		if(localStorage.getItem("love-seats-num") > 0) {
+			var html = '';
+			html += `
+            <li class="list-group-item d-flex justify-content-between lh-condensed">
+              <div>
+                <h6 class="my-0"><span class="ticket-times">` + localStorage.getItem("love-seats-num") + `x </span>Love ticket</h6>
+              </div>
+              <span class="ticket-price">$` + (localStorage.getItem("love-seats-num")) * 12 + `</span>
+            </li><hr>`
+			$('.ticket-list').append(html);
+		}
+	}
+	var html = '';
+	var price_of_tickets = parseInt(localStorage.getItem("final_price_num"));
+	html += `$` + price_of_tickets
+	$('.total-price-2').html(html);
+}
+
+function getMovieNameTicket() {
+	var id = parseInt(localStorage.getItem("movie_id"));
+	$.ajax({
+		url: 'rest/movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			var html = '';
+			html += data.movie_name;
+			$('.ticket-movie-name').html(html);
+			console.log(html);
+		}
+	});
+}
+    
+$(function() {
+	if(!window.localStorage.getItem("token")) {
+		window.location = "login.html";
+	} else if(window.localStorage.getItem("final_price_num") == null) {
+		window.location = "index.html";
+	} else {
+		$('.content').show();
+	}
+});
+    
+</script>

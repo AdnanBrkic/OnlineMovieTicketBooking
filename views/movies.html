@@ -1,0 +1,116 @@
+<div class="content">
+	<div class="top-bar-1">
+		<h1>Discover your<br>favorites</h1>
+	</div>
+	<div id="movies-list-all">
+	</div>
+</div>
+
+<script>
+    
+function openPage(id) {
+	localStorage.removeItem("movie_id");
+	window.localStorage.setItem('movie_id', id);
+	changeLocations();
+
+	function changeLocations() {
+		window.location = "#single-movie";
+	}
+}
+
+var MovieService = {
+	init: function() {
+		MovieService.listCategory();
+	},
+	swiperShow: function() {
+		var swiper = new Swiper(".swiper", {
+			slidesPerView: 2,
+			slidesPerGroup: 2,
+			pagination: {
+				el: ".swiper-pagination",
+				clickable: true,
+			},
+			breakpoints: {
+				// when window width is >= 480px
+				1024: {
+					slidesPerView: 4,
+					slidesPerGroup: 4
+				},
+				1436: {
+					slidesPerView: 5,
+					slidesPerGroup: 5
+				},
+				1620: {
+					slidesPerView: 6,
+					slidesPerGroup: 6
+				},
+				2560: {
+					slidesPerView: 8,
+					slidesPerGroup: 8
+				}
+			}
+		});
+	},
+    hidePreloader: function() {
+        $(".preloader").fadeOut(1000);
+    },
+    
+	listCategory: function() {
+		$.get("rest/category", function(data) {
+			var html2 = "";
+			for(let i = 0; i < data.length; i++) {
+				html2 += `
+                    <div class="movies-tab swiper">
+                          <div class="list-name">
+                            <h3>` + data[i].name + `</h3>
+                          </div>
+                          <div id="` + data[i].name + `" class="movie-list swiper-wrapper">
+                          </div>
+                    </div>`
+			}
+            
+			$("#movies-list-all").html(html2);
+			for(let i = 0; i < data.length; i++) {
+				var category_name = "";
+				category_name += data[i].name;
+				MovieService.list(category_name);
+			}
+            MovieService.hidePreloader();
+		});
+	},
+    
+	list: function(category_name) {
+		$.get("rest/movies", function(data) {
+			var html = "";
+			for(let i = 0; i < data.length; i++) {
+				//if(data[i].category != "action") break;
+				if(data[i].category.toLowerCase().indexOf(category_name.toString()) < 0) continue;
+				html += `  
+                  <a id="` + data[i].id + `" onclick="openPage(` + data[i].id + `);" class="swiper-slide">
+                        <div class="movie-details">
+                            <div class="details-content">
+                                <p class="name">` + data[i].movie_name + `</p>
+                                <p class="director">` + data[i].director + `</p>
+                                <div class="more-details">
+                                    <div class="stars-rate">
+                                        <i class="fa-solid fa-star"></i>
+                                        <p class="movie-rate">` + data[i].rating + `</p>
+                                    </div>
+                                    <div class="year">
+                                        <p>2020</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="movie-thumb">
+                            <img src="` + data[i].movie_image + `".jpg"">
+                        </div>
+                    </a>`
+			}
+			$('#' + category_name.toString()).html(html);
+			MovieService.swiperShow();
+		});
+	},
+}
+MovieService.init();
+</script>

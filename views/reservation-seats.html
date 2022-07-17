@@ -1,0 +1,297 @@
+<div class="content">
+	<div class="container-fluid">
+        <div class="top-bar-1">
+            <p>FIND A SEAT</p>
+            <h1 class="movie-name"></h1>
+        </div>
+		<div class="row reservation-seats">
+			<div class="col-lg-6 d-flex flex-column">
+				<img src="images/cinema_screen.svg" class="img-fluid">
+				<div id="cinema_seats">
+				</div>
+				<div class="seats-info"></div>
+			</div>
+			<div class="offset-lg-1 col-lg-4 bill-result">
+				<p>Your selected seats</p>
+				<hr>
+				<div id="regular" class="row bill">
+					<div class="col">
+						<p>Regular</p>
+					</div>
+					<div class="col">
+						<p class="num_seats">0</p>
+					</div>
+					<div class="col">
+						<p class="price">$<span class="price_amount">0</span></p>
+					</div>
+				</div>
+				<div id="vip" class="row bill">
+					<div class="col">
+						<p>Vip</p>
+					</div>
+					<div class="col">
+						<p class="num_seats">0</p>
+					</div>
+					<div class="col">
+						<p class="price">$<span class="price_amount">0</span></p>
+					</div>
+				</div>
+				<div id="love" class="row bill">
+					<div class="col">
+						<p>Love</p>
+					</div>
+					<div class="col">
+						<p class="num_seats">0</p>
+					</div>
+					<div class="col">
+						<p class="price">$<span class="price_amount">0</span></p>
+					</div>
+				</div>
+				<hr>
+				<div class="button-cash">
+					<p class="to-pay">$<span id="to-pay-final"></span></p>
+					<p>Reserve</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+
+generateSeatsTable();
+    
+function changeLocations() {
+	window.location = "#reservation";
+}
+    
+$(".button-cash").click(function() {
+	if($("#vip .num_seats").html() == "0" && $("#regular .num_seats").html() == "0" && $("#love .num_seats").html() == "0") {
+		alert("Moras odabrati sjediste");
+	} else {
+		var love_seats = parseInt($("#love .num_seats").html());
+		var vip_seats = parseInt($("#vip .num_seats").html());
+		var regular_seats = parseInt($("#regular .num_seats").html());
+		var final_price = parseInt($("#to-pay-final").html());
+		localStorage.removeItem("love-seats-num");
+		window.localStorage.setItem('love-seats-num', love_seats);
+		localStorage.removeItem("vip-seats-num");
+		window.localStorage.setItem('vip-seats-num', vip_seats);
+		localStorage.removeItem("regular-seats-num");
+		window.localStorage.setItem('regular-seats-num', regular_seats);
+		localStorage.removeItem("final_price_num");
+		window.localStorage.setItem('final_price_num', final_price);
+		localStorage.setItem('seats_update', JSON.stringify(seats));
+		changeLocations();
+	}
+});
+
+const seats = {
+	1: 0,
+	2: 0,
+	3: 0,
+	4: 0,
+	5: 0,
+	6: 0,
+	7: 0,
+	8: 0,
+	9: 0,
+	10: 0,
+	11: 0,
+	12: 0,
+	13: 0,
+	14: 0,
+	15: 0,
+	16: 0,
+	17: 0,
+	18: 0,
+	19: 0
+}
+
+function addSeat(seats, id) {
+	for(var key in seats) {
+		if(key == id) {
+			seats[key] = 1;
+		}
+	}
+}
+
+function deleteSeat(seats, id) {
+	for(var key in seats) {
+		if(key == id) {
+			seats[key] = 0;
+		}
+	}
+}
+
+    
+function generateSeatsTable() {
+	$.ajax({
+		url: 'rest/cinema_seats',
+		type: 'GET',
+		success: function(data) {
+			var help = 0;
+			var html = '';
+			for(let i = 0; i < 4; i++) {
+				html += `<div class="row flex-nowrap seats">`
+				var j = 0;
+				for(j = j + help; j < data.length; j++) {
+					if(data[j].seat_row == "A") {
+						while(help < 4) {
+							html += `<svg class="` + data[help].id + `" onclick="chooseSeat(` + data[help].id + `)" xmlns="http://www.w3.org/2000/svg" width="30" height="34" viewBox="0 0 30 34"><path class="seat free" id="Rectangle_25" data-name="Rectangle 25" d="M10,0H20A10,10,0,0,1,30,10V32a2,2,0,0,1-2,2H2a2,2,0,0,1-2-2V10A10,10,0,0,1,10,0Z" fill="#fff"/></svg>`
+							help++;
+						}
+						break;
+					} else if(data[j].seat_row == "B") {
+						while(help < 10) {
+							html += `<svg class="` + data[help].id + `" onclick="chooseSeat(` + data[help].id + `)" xmlns="http://www.w3.org/2000/svg" width="30" height="34" viewBox="0 0 30 34"><path class="seat free" id="Rectangle_25" data-name="Rectangle 25" d="M10,0H20A10,10,0,0,1,30,10V32a2,2,0,0,1-2,2H2a2,2,0,0,1-2-2V10A10,10,0,0,1,10,0Z" fill="#fff"/></svg>`
+							help++;
+						}
+						break;
+					} else if(data[j].seat_row == "C") {
+						while(help < 16) {
+							html += `<svg class="` + data[help].id + `" onclick="chooseSeat(` + data[help].id + `)" xmlns="http://www.w3.org/2000/svg" width="30.001" height="34" viewBox="0 0 30.001 34"><g id="Group_62" data-name="Group 62" transform="translate(0.184 0.081)"><path class="seat free" id="Subtraction_2" data-name="Subtraction 2" d="M28,34H2a2,2,0,0,1-2-2V10A10.012,10.012,0,0,1,10,0H20A10.011,10.011,0,0,1,30,10V32A2,2,0,0,1,28,34ZM15,10.027a.85.85,0,0,0-.777.485l-1.772,3.605-3.964.58A.873.873,0,0,0,8,16.185l2.868,2.805-.679,3.964a.855.855,0,0,0,.19.706.884.884,0,0,0,.666.313.853.853,0,0,0,.4-.1L15,22l3.547,1.871a.852.852,0,0,0,.4.1.886.886,0,0,0,.668-.313.854.854,0,0,0,.189-.705l-.679-3.964,2.867-2.805a.873.873,0,0,0-.48-1.487l-3.965-.58-1.771-3.605A.866.866,0,0,0,15,10.027Z" transform="translate(-0.183 -0.081)" fill="#fff"/></g></svg>`
+							help++;
+						}
+						break;
+					} else if(data[j].seat_row == "D") {
+						while(help < 19) {
+							html += `<svg class="` + data[help].id + `" onclick="chooseSeat(` + data[help].id + `)" xmlns="http://www.w3.org/2000/svg" width="91.001" height="34" viewBox="0 0 91.001 34"><path class="seat free" id="Subtraction_6" data-name="Subtraction 6" d="M89,34H2a2,2,0,0,1-2-2V10A10.012,10.012,0,0,1,10,0H81A10.011,10.011,0,0,1,91,10V32A2,2,0,0,1,89,34ZM42.447,10.686a3.736,3.736,0,0,0-2.43.872,3.986,3.986,0,0,0-1.436,2.9,4.04,4.04,0,0,0,1.149,3.022l5.607,5.686a.92.92,0,0,0,1.313,0l5.607-5.686a4.039,4.039,0,0,0,1.151-3.021,3.984,3.984,0,0,0-1.436-2.9,3.735,3.735,0,0,0-2.429-.872,4.217,4.217,0,0,0-2.978,1.259l-.571.578-.571-.578A4.21,4.21,0,0,0,42.447,10.686Z" transform="translate(0.001)" fill="#fff"/></svg>`
+							help++;
+						}
+						break;
+					}
+				}
+				html += `</div>`
+			}
+			$("#cinema_seats").html(html);
+		}
+	});
+}
+    
+function checkSeatsAvailable(id) {
+	$.ajax({
+		url: 'rest/selected_seats/projecting_movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			for(let i = 0; i < data.length; i++) {
+				$('.' + data[i].cinema_seats_id + ' .seat').addClass("disable");
+				$('.' + data[i].cinema_seats_id + ' .seat').removeClass("free");
+			}
+		}
+	});
+}
+
+
+function chooseSeat(id) {
+	var Id = $(this).attr('id');
+	if(id < 11 && $('.' + id + ' .seat').hasClass("free")) {
+		$('.' + id + ' .seat').addClass("selected");
+		$('.' + id + ' .seat').removeClass("free");
+		var currentVal = $("#regular .price_amount").text();
+		var iNum = parseInt(currentVal);
+		iNum = iNum + 10;
+		$("#regular .price_amount").text(iNum);
+		var currentVal2 = $("#regular .num_seats").text();
+		var iNum2 = parseInt(currentVal2);
+		iNum2 = iNum2 + 1;
+		$("#regular .num_seats").text(iNum2);
+		calculateFinalPrize();
+		addSeat(seats, id);
+	} else if(id < 11 && $('.' + id + ' .seat').hasClass("selected")) {
+		$('.' + id + ' .seat').removeClass("selected");
+		$('.' + id + ' .seat').addClass("free");
+		var currentVal = $("#regular .price_amount").text();
+		var iNum = parseInt(currentVal);
+		iNum = iNum - 10;
+		$("#regular .price_amount").text(iNum);
+		var currentVal2 = $("#regular .num_seats").text();
+		var iNum2 = parseInt(currentVal2);
+		iNum2 = iNum2 - 1;
+		$("#regular .num_seats").text(iNum2);
+		calculateFinalPrize();
+		deleteSeat(seats, id);
+	} else if(id > 10 && id < 17 && $('.' + id + ' .seat').hasClass("free")) {
+		$('.' + id + ' .seat').addClass("selected");
+		$('.' + id + ' .seat').removeClass("free");
+		var currentVal = $("#vip .price_amount").text();
+		var iNum = parseInt(currentVal);
+		iNum = iNum + 15;
+		$("#vip .price_amount").text(iNum);
+		var currentVal2 = $("#vip .num_seats").text();
+		var iNum2 = parseInt(currentVal2);
+		iNum2 = iNum2 + 1;
+		$("#vip .num_seats").text(iNum2);
+		calculateFinalPrize();
+		addSeat(seats, id);
+	} else if(id > 10 && id < 17 && $('.' + id + ' .seat').hasClass("selected")) {
+		$('.' + id + ' .seat').removeClass("selected");
+		$('.' + id + ' .seat').addClass("free");
+		var currentVal = $("#vip .price_amount").text();
+		var iNum = parseInt(currentVal);
+		iNum = iNum - 15;
+		$("#vip .price_amount").text(iNum);
+		var currentVal2 = $("#vip .num_seats").text();
+		var iNum2 = parseInt(currentVal2);
+		iNum2 = iNum2 - 1;
+		$("#vip .num_seats").text(iNum2);
+		calculateFinalPrize();
+		deleteSeat(seats, id);
+	} else if(id > 16 && id < 20 && $('.' + id + ' .seat').hasClass("free")) {
+		$('.' + id + ' .seat').addClass("selected");
+		$('.' + id + ' .seat').removeClass("free");
+		var currentVal = $("#love .price_amount").text();
+		var iNum = parseInt(currentVal);
+		iNum = iNum + 12;
+		$("#love .price_amount").text(iNum);
+		var currentVal2 = $("#love .num_seats").text();
+		var iNum2 = parseInt(currentVal2);
+		iNum2 = iNum2 + 1;
+		$("#love .num_seats").text(iNum2);
+		calculateFinalPrize();
+		addSeat(seats, id);
+	} else if(id > 16 && id < 20 && $('.' + id + ' .seat').hasClass("selected")) {
+		$('.' + id + ' .seat').removeClass("selected");
+		$('.' + id + ' .seat').addClass("free");
+		var currentVal = $("#love .price_amount").text();
+		var iNum = parseInt(currentVal);
+		iNum = iNum - 12;
+		$("#love .price_amount").text(iNum);
+		var currentVal2 = $("#love .num_seats").text();
+		var iNum2 = parseInt(currentVal2);
+		iNum2 = iNum2 - 1;
+		$("#love .num_seats").text(iNum2);
+		calculateFinalPrize();
+		deleteSeat(seats, id);
+	}
+}
+    
+function generatePriceFields() {
+	$("#regular .price_amount").text("0");
+	$("#vip .price_amount").text("0");
+	$("#love .price_amount").text("0");
+	$("#regular .num_seats").text("0");
+	$("#vip .num_seats").text("0");
+	$("#love .num_seats").text("0");
+	$("#to-pay-final").text("0");
+}
+
+function calculateFinalPrize() {
+	var currentVal = $("#regular .price_amount").text();
+	var currentVal2 = $("#vip .price_amount").text();
+	var currentVal3 = $("#love .price_amount").text();
+	var iNum = parseInt(currentVal);
+	var iNum2 = parseInt(currentVal2);
+	var iNum3 = parseInt(currentVal3);
+	$("#to-pay-final").text(iNum + iNum2 + iNum3);
+}
+    
+function getMovieName(id) {
+    $.ajax({
+		url: 'rest/movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			$(".movie-name").html(data.movie_name);
+		}
+	});
+}
+</script>

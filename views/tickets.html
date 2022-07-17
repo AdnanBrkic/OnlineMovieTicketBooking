@@ -1,0 +1,165 @@
+<div class="content" style="display: none">
+	<div class="top-bar-1">
+		<p>TICKETS</p>
+		<h1>Here you can see all your Tickets</h1>
+	</div>
+	<div id="my-tickets">
+		<div class="row">
+		</div>
+	</div>
+</div>
+
+<script src="js/JsBarcode.all.min.js"></script>
+
+<script>
+    
+    
+$(function() {
+        if(!window.localStorage.getItem("token")) {
+            window.location = "login.html";
+        } else {
+            $('.content').show();
+        }
+    });
+    
+getTickets(getID());
+    
+
+function getID() {
+	var result = "";
+	$.ajax({
+		type: "GET",
+		url: "rest/locked/id",
+		async: false,
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
+		},
+		success: function(data) {
+			result = data;
+		},
+	});
+	return parseInt(result);
+}
+    
+
+function getTickets(id) {
+	$.ajax({
+		url: "rest/locked/reservation/user/" + id,
+		type: "GET",
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader("Authorization", localStorage.getItem("token"));
+		},
+		success: function(data) {
+			var currDate = new Date();
+			var min = currDate.getMinutes();
+            if (min < 10) {
+                min = "0" + min;
+            }
+            var hour = currDate.getHours();
+            if (hour < 10) {
+                hour = "0" + hour;
+            }
+			var time = hour + ":" + min;
+			var today = new Date();
+			var dd = String(today.getDate()).padStart(2, "0");
+			var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+			var yyyy = today.getFullYear();
+			today = yyyy + "-" + mm + "-" + dd;
+			var html = "";
+			for(let i = 0; i < data.length; i++) {
+				if(today <= data[i].projecting_date && time < data[i].projecting_time) {
+					html += `<div class="col-md-3">
+                                            <div class="ticket">
+                                                <div class="ticket-image" style="background-image: url( ` + data[i].movie_image + `)">
+                                                   <p class="ticket-stats ` + data[i].status + `">` + data[i].status + `</p>
+                                                    <h3 class="ticket-movie-name">` + data[i].movie_name + `</h3>
+                                                </div>
+                                                <div class="ticket-info"> 
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <span>Type</span>
+                                                            <p class="` + data[i].type + `">` + data[i].type + `</p>
+                                                        </div>
+                                                        <div class="col">
+                                                            <span>Seat Number</span>
+                                                            <p>` + data[i].seat_number + `</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <span>Date</span>
+                                                            <p>` + data[i].projecting_date + `</p>
+                                                        </div>
+                                                        <div class="col">
+                                                            <span>Time</span>
+                                                            <p>` + data[i].projecting_time + `</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="ticket-barcode">
+                                                    <img class="barcode-bg" src="images/barcode-bg.svg">
+                                                    <svg class="barcode"
+                                                      jsbarcode-format="CODE39"
+                                                      jsbarcode-value="` + data[i].reservation_code + `"
+                                                      jsbarcode-textmargin="0"
+                                                      jsbarcode-fontoptions="bold"
+                                                      jsbarcode-width="1"
+                                                      jsbarcode-height="40"
+                                                      jsbarcode-fontSize="10">
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>`;
+				} else {
+					html += `<div class="col-md-3 pos-rel">
+                            <p class="ticket-stats-2 EXPIRED">EXPIRED</p>
+                            <div class="ticket expired-opacity">
+                                <div class="ticket-image EXPIRED-BG" style="background-image: url( ` + data[i].movie_image + `)">
+                                   
+                                    <h3 class="ticket-movie-name">` + data[i].movie_name + `</h3>
+                                </div>
+                                <div class="ticket-info"> 
+                                    <div class="row">
+                                        <div class="col">
+                                            <span>Type</span>
+                                            <p class="` + data[i].type + `">` + data[i].type + `</p>
+                                        </div>
+                                        <div class="col">
+                                            <span>Seat Number</span>
+                                            <p>` + data[i].seat_number + `</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <span>Date</span>
+                                            <p>` + data[i].projecting_date + `</p>
+                                        </div>
+                                        <div class="col">
+                                            <span>Time</span>
+                                            <p>` + data[i].projecting_time + `</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ticket-barcode">
+                                    <img class="barcode-bg" src="images/barcode-bg.svg">
+                                    <svg class="barcode"
+                                      jsbarcode-format="CODE39"
+                                      jsbarcode-value="` + data[i].reservation_code + `"
+                                      jsbarcode-textmargin="0"
+                                      jsbarcode-fontoptions="bold"
+                                      jsbarcode-width="1"
+                                      jsbarcode-height="40"
+                                      jsbarcode-fontSize="10">
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>`;
+				}
+			}
+			$("#my-tickets .row").append(html);
+			JsBarcode(".barcode").init();
+		},
+	});
+}
+    
+</script>

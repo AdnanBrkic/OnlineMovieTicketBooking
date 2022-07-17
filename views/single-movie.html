@@ -1,0 +1,224 @@
+<div class="movie-header">
+	<div class="row w-100">
+		<div class="col-md-5 d-flex">
+			<div class="left-info">
+				<div id="single-movie-duration" class="movie-duration">
+				</div>
+				<p id="single-movie-rating" class="movie-rate"></p>
+			</div>
+		</div>
+		<div class="col-sm-7 d-flex">
+			<div class="right-info justify-content-end">
+				<div id="single-movie-categories" class="movie-categories">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="black-gradient-bg">
+	</div>
+</div>
+<div class="content">
+	<div class="container-fluid">
+		<div class="row movie-projection-info">
+			<div class="col-xs-12 col-sm-4 col-xl-3 col-xxl-2 no-pd">
+				<div id="single-movie-image" class="movie-image">
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-8 col-xl-9 col-xxl-10 d-flex">
+				<div id="single-movie-info" class="movie-additional-info">
+					<h1 class="movie-name"></h1>
+					<div class="projection-date">
+						<p>Today projections : </p>
+						<div id="movie-projection-time" class="projections">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row movie-info-details">
+			<div class="col-xxl-6 col-xl-12">
+				<div class="movie-story">
+					<p class="tab-title">STORY</p>
+					<p>Seven years after the Monsterpocalypse, Joel Dawson, along with the rest of humanity, has been living underground ever since giant creatures took control of the land. After reconnecting over the radio with his high school girlfriend, Aimee, who is now 80 miles away at a coastal colony, Joel begins to fall for her again. As Joel realizes that there's nothing left for him underground, he decides to venture out to Aimee, despite all the dangerous monsters that stand in his way.</p>
+				</div>
+			</div>
+			<div class="col-xxl-6 col-xl-12">
+				<div class="movie-actors">
+					<div class="row">
+						<p class="tab-title">CASTS</p>
+						<div id="single-movie-actors" class="row">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+//articles
+function reserveSeats(id) {
+	localStorage.removeItem("projecting_movie");
+	window.localStorage.setItem('projecting_movie', id);
+	changeLocations();
+
+	function changeLocations() {
+		window.location = "#reservation-seats";
+	}
+}
+
+function getSingleMovie(id) {
+	$.ajax({
+		url: 'rest/movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			var html = '';
+			html += `
+                    <span>` + data.movie_name + `</span>`
+			$(".movie-name").html(html);
+		}
+	});
+}
+
+function getMovieProjecting(id) {
+	$.ajax({
+		url: 'rest/projecting_movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			var currDate = new Date();
+            var min = currDate.getMinutes();
+            if (min < 10) {
+                min = "0" + min;
+            }
+            var hour = currDate.getHours();
+            if (hour < 10) {
+                hour = "0" + hour;
+            }
+			var time = hour + ":" + min;
+			var today = new Date();
+			var dd = String(today.getDate()).padStart(2, '0');
+			var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+			var yyyy = today.getFullYear();
+			today = yyyy + '-' + mm + '-' + dd;
+			currDate.toISOString().split('T')[0]
+			var html = '';
+			for(let i = 0; i < data.length; i++) {
+				if(data[i].projecting_date != today) continue;
+				else {
+                    console.log(time);
+                    console.log(data[i].projecting_time);
+					if(time >= data[i].projecting_time) {
+						html += `
+                        <div class="projection not-active">` + data[i].projecting_time + `</div>`
+					} else {
+						html += `
+                        <div onclick="reserveSeats(` + data[i].id + `);" class="projection">` + data[i].projecting_time + `</div>`
+					}
+				}
+			}
+			if(html == '') {
+				html += `<div class="no-projection-today">Unfortunatly, there is not projection today</div>`
+				$("#movie-projection-time").html(html);
+			} else $("#movie-projection-time").html(html);
+		}
+	});
+}
+    
+
+function getMovieImage(id) {
+	$.ajax({
+		url: 'rest/movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			var html = '';
+			html += `
+                    <div class="watch-trailer">
+                        <a href="` + data.trailer + `" target="_blank">
+                            <div class="circle">
+                                <i class="fa-solid fa-play"></i>
+                            </div>
+                            <p>Watch trailer</p>
+                        </a>
+                    </div>
+                    <img src="` + data.movie_image + `".jpg"">`
+			$("#single-movie-image").html(html);
+		}
+	});
+}
+
+function getMovieRating(id) {
+	$.ajax({
+		url: 'rest/movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			var html = '';
+			html += `
+                    <i class="fa-solid fa-star"></i> ` + data.rating + ` <span> / 10</span>`
+			$("#single-movie-rating").html(html);
+		}
+	});
+}
+
+function getMovieDuration(id) {
+	$.ajax({
+		url: 'rest/movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			var html = '';
+			html += `
+                    <p><i class="feather-18" data-feather="clock"></i> Duration:</p>
+            <h1>` + data.duration_time + `</h1>`
+			$("#single-movie-duration").html(html);
+		}
+	});
+}
+
+function getMovieCategory(id) {
+	$.ajax({
+		url: 'rest/movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			var myString = data.category;
+			var myArray = myString.split(" ");
+			var html = '';
+			for(let i = 0; i < myArray.length; i++) {
+				html += `<p class="categorie">` + myArray[i] + `</p>`
+			}
+			$("#single-movie-categories").html(html);
+		}
+	});
+}
+
+function getMovieCasts(id) {
+	$.ajax({
+		url: 'rest/movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			var myString = data.actors;
+			var myArray = myString.split(",");
+			var html = '';
+			for(let i = 0; i < myArray.length; i++) {
+				html += `   <div class="col-6">
+                                <div class="actor">
+                                    <img src="images/actor_image.jpeg">
+                                    <div class="name">
+                                        <p class="real">` + myArray[i] + `</p>
+                                    </div>
+                                </div>
+                            </div>`
+			}
+			$("#single-movie-actors").html(html);
+		}
+	});
+}
+
+function getMovieBackgroundImage(id) {
+	$.ajax({
+		url: 'rest/movies/' + id,
+		type: 'GET',
+		success: function(data) {
+			var value = data.bg_image;
+			$('.movie-header').css("background-image", `url(` + value + `)`);
+		}
+	});
+}
+</script>
